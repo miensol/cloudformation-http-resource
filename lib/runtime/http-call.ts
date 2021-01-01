@@ -1,4 +1,4 @@
-type HttpMethod =
+export type HttpMethod =
   | 'get' | 'GET'
   | 'delete' | 'DELETE'
   | 'head' | 'HEAD'
@@ -17,5 +17,17 @@ export interface HttpCall {
   headers?: {
     [key: string]: string
   }
-  body: string
+  body?: string
+  successStatusCodes?: number[]
 }
+
+export interface CfnHttpCall {
+  method: HttpMethod,
+  url: string
+  headers?: {
+    [key: string]: string
+  }
+  body?: string
+  successStatusCodes?: string[]
+}
+

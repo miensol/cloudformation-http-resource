@@ -19,6 +19,8 @@ interface HttpProps {
 }
 
 export class Http extends CoreConstruct {
+  private customResource: CustomResource;
+
   constructor(scope: Construct, id: string, props: HttpProps) {
     super(scope, id);
 
@@ -31,7 +33,7 @@ export class Http extends CoreConstruct {
       }
     });
 
-    const resource = new CustomResource(this, 'Resource', {
+    this.customResource = new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: 'Custom::Http',
       properties: {
@@ -40,6 +42,14 @@ export class Http extends CoreConstruct {
         onDelete: props.onDelete,
       }
     })
+  }
+
+  getResponseFieldReference(dataPath: string) {
+    return this.customResource.getAtt(dataPath);
+  }
+
+  getResponseField(dataPath: string) {
+    return this.customResource.getAttString(dataPath);
   }
 }
 

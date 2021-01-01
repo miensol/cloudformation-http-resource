@@ -1,60 +1,16 @@
-import {
+import type {
   Handler,
   HandlerResponse
 } from "@aws-cdk/core/lib/custom-resource-provider/nodejs-entrypoint";
-import { CloudFormationCustomResourceEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
+import type { CloudFormationCustomResourceEvent } from "aws-lambda/trigger/cloudformation-custom-resource";
 import axios, { AxiosResponse } from "axios";
-import { HttpCall } from "./http-call";
+import { flatten } from "./flatten";
+import { log } from "./log";
+import { parseHttpResponse } from "./parse-http-response";
+import { selectCallForEventType } from "./select-call-for-event-type";
+import { validateStatusForOptions } from "./validate-status";
 
-function selectCallForEventType(event: CloudFormationCustomResourceEvent) {
-  const onCreate: HttpCall | undefined = event.ResourceProperties['onCreate']
-  const onUpdate: HttpCall | undefined = event.ResourceProperties['onUpdate']
-  const onDelete: HttpCall | undefined = event.ResourceProperties['onDelete']
-
-  let call: HttpCall | undefined;
-
-  switch (event.RequestType) {
-    case "Create":
-      call = onCreate;
-      break;
-    case "Update":
-      call = onUpdate;
-      break;
-    case "Delete":
-      call = onDelete;
-      break;
-  }
-
-  log({ message: 'Selected call', call, event })
-
-  return call
-}
-
-
-function parseHttpResponse(response: AxiosResponse<Buffer | undefined>) {
-  const data = response.data;
-  if (!data) {
-    return {}
-  }
-  const contentType = response.headers['content-type'];
-  switch (contentType) {
-    case 'application/json':
-      return JSON.parse(data.toString('utf8'))
-    case 'application/xml':
-    case 'text/xml':
-      return data.toString('utf8')
-    default:
-      if (/^text\//.test(contentType)) {
-        return data.toString('utf8')
-      }
-      return data.toString('base64')
-  }
-}
-
-const log = <T extends { message: string }>(value: T) => {
-  console.log(value)
-}
-
+// noinspection JSUnusedGlobalSymbols
 export const handler: Handler = async (event: CloudFormationCustomResourceEvent) => {
   const call = selectCallForEventType(event);
 
@@ -70,17 +26,18 @@ export const handler: Handler = async (event: CloudFormationCustomResourceEvent)
     method: call.method,
     headers: call.headers,
     responseType: "arraybuffer",
-    data: call.body
+    data: call.body,
+    validateStatus: validateStatusForOptions(call)
   });
 
   log({ message: 'Response', response, event })
 
   const result: HandlerResponse = {
-    Data: {
+    Data: flatten({ // Data must be a flat object
+      statusCode: response.status,
       body: parseHttpResponse(response),
       headers: response.headers
-    },
-    PhysicalResourceId: event.RequestType == 'Create' ? response.headers['location'] : undefined
+    })
   };
 
   log({
