@@ -17,7 +17,7 @@ export interface HttpCall {
   headers?: {
     [key: string]: string
   }
-  body?: string
+  body?: any
   successStatusCodes?: number[]
 }
 
