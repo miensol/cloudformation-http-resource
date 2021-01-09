@@ -70,8 +70,13 @@ export class ExamplesStack extends cdk.Stack {
     })
 
 
-    const secret = new secretmanager.Secret(this, 'SampleSecret', {
-      description: 'Example Api Key '
+    const secret = new secretmanager.Secret(this, 'ApiKey', {
+      description: 'Example Api Key',
+      generateSecretString: {
+        // our echo service responds with request
+        // excluding characters to prevent malformed json to be returned from the service
+        excludeCharacters: '"\\'
+      }
     });
 
     const secretCall: HttpCall = {
@@ -89,7 +94,7 @@ export class ExamplesStack extends cdk.Stack {
       }
     };
 
-    const includeSecret = new Http(this, 'IncludeSecret', {
+    const includeSecret = new Http(this, 'SecretHttpCall', {
       onCreate: secretCall,
       onUpdate: secretCall
     })
@@ -98,7 +103,6 @@ export class ExamplesStack extends cdk.Stack {
       description: "Echo service responds with body so read the secret to test things out",
       value: includeSecret.getResponseField("body.secret")
     })
-
 
   }
 

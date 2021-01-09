@@ -1,7 +1,9 @@
+import * as lambda from "@aws-cdk/aws-lambda";
 import * as lambdaNodejs from "@aws-cdk/aws-lambda-nodejs";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { NodejsFunctionProps } from "@aws-cdk/aws-lambda-nodejs/lib/function";
-import { Construct as CoreConstruct, Stack } from "@aws-cdk/core";
+import { CfnLogGroup, LogGroup } from "@aws-cdk/aws-logs";
+import { Construct as CoreConstruct, RemovalPolicy, Stack } from "@aws-cdk/core";
 import * as cr from "@aws-cdk/custom-resources";
 import { Provider } from "@aws-cdk/custom-resources";
 import { ProviderProps } from "@aws-cdk/custom-resources/lib/provider-framework/provider";
