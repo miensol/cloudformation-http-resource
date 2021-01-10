@@ -2,7 +2,7 @@
   "name": "cloudformation-http-resource",
   "version": "0.1.2",
   "description": "Cloudformation resource to call any http API",
-  "main": "./lib/index.ts",
+  "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
     "tsc": "tsc",
