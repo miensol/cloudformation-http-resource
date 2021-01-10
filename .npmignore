@@ -1,1 +1,7 @@
 examples
+
+*.ts
+!*.d.ts
+
+*.tsbuildinfo
+tsconfig.json
