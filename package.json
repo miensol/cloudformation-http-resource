@@ -1,5 +1,5 @@
 {
-  "name": "cfn-http-resource",
+  "name": "cloudformation-http-resource",
   "version": "0.1.0",
   "description": "Cloudformation resource to call any http API",
   "main": "./lib/index.ts",
