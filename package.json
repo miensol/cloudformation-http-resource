@@ -1,6 +1,6 @@
 {
   "name": "cfn-http-resource",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Cloudformation resource to call any http API",
   "main": "./lib/index.ts",
   "types": "./lib/index.d.ts",
