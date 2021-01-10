@@ -3,5 +3,8 @@ examples
 *.ts
 !*.d.ts
 
+# esbuild is running in package consumers
+!lib/runtime/*.ts
+
 *.tsbuildinfo
 tsconfig.json
